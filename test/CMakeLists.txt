@@ -17,4 +17,4 @@ endfunction()
 # add_test_executable(my_test1 my_test1.cpp)
 # add_ctest_executable(my_ctest2 my_ctest2.cpp)
 
-
+add_test_executable(test1 test1.cpp)

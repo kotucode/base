@@ -21,6 +21,7 @@
 !/docs/**/*
 
 !/include/**/*.h
+!/include/**/*.hpp
 !/src/**/*.cpp
 
 !/test/**/*
