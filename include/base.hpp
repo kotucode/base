@@ -16,8 +16,9 @@ namespace kotucode {
 namespace base {
 
 namespace alphabet {
+
 /**
- *
+ * @brief Base62 编码字符集，提供 0-9、A-Z、a-z 共 62 个字符的正向与反向映射表。
  */
 struct base62 {
   static const std::array<char, 62>& data() noexcept {
@@ -49,10 +50,12 @@ struct base62 {
     return rdata;
   }
 };
+
 }  // namespace alphabet
 
 namespace base62 {
 namespace details {
+
 /**
  *
  */
@@ -113,23 +116,15 @@ inline std::string encode(const std::string& binary_data,
 
   return result;
 }
+
 /**
  *
  */
-
 inline std::string decode(const std::string& base_string,
                           const std::array<int8_t, 256>& rdata) {
   if (base_string.empty()) return "";
 
-  // 1. 从 rdata 中推断基数：最大值 + 1（要求字符集连续且从 0 开始）
-  int8_t max_val = -1;
-  for (std::size_t i = 0; i < rdata.size(); ++i) {
-    if (rdata[i] > max_val) max_val = rdata[i];
-  }
-  if (max_val < 0) return "";  // 无效的反向表
-  const std::size_t base = static_cast<std::size_t>(max_val) + 1;
-
-  // 2. 找到 alphabet[0] 对应的字符（用于前导零处理）
+  // 1. 找到 alphabet[0] 对应的字符（用于前导零处理）
   char zero_char = 0;
   bool found_zero = false;
   for (int i = 0; i < 256; ++i) {
@@ -144,16 +139,16 @@ inline std::string decode(const std::string& base_string,
     zero_char = '0';
   }
 
-  // 3. 统计输入字符串前导“零字符”的个数
+  // 2. 统计输入字符串前导“零字符”的个数
   std::size_t zeros = 0;
   while (zeros < base_string.size() && base_string[zeros] == zero_char) {
     ++zeros;
   }
 
-  // 4. 初始化大整数（big-endian，空向量表示数值 0）
+  // 3. 初始化大整数（big-endian，空向量表示数值 0）
   std::vector<uint8_t> bignum;
 
-  // 5. 遍历剩余字符，进行 bignum = bignum * base + digit
+  // 4. 遍历剩余字符，进行 bignum = bignum * base + digit
   for (std::size_t i = zeros; i < base_string.size(); ++i) {
     unsigned char c = static_cast<unsigned char>(base_string[i]);
     int digit = static_cast<int>(rdata[c]);
@@ -172,7 +167,7 @@ inline std::string decode(const std::string& base_string,
       int carry = 0;
       // 从低位（末尾）向高位（开头）处理
       for (int j = static_cast<int>(bignum.size()) - 1; j >= 0; --j) {
-        int product = bignum[j] * base + carry;
+        int product = bignum[j] * 62 + carry;
         bignum[j] = static_cast<uint8_t>(product % 256);
         carry = product / 256;
       }
@@ -199,12 +194,12 @@ inline std::string decode(const std::string& base_string,
     }
   }
 
-  // 6. 移除大整数前导零（保留空向量表示 0）
+  // 5. 移除大整数前导零（保留空向量表示 0）
   while (!bignum.empty() && bignum.front() == 0) {
     bignum.erase(bignum.begin());
   }
 
-  // 7. 构造最终二进制结果：zeros 个 0x00 + bignum 字节序列
+  // 6. 构造最终二进制结果：zeros 个 0x00 + bignum 字节序列
   std::string result;
   result.reserve(zeros + bignum.size());
   result.append(zeros, '\0');
@@ -219,20 +214,32 @@ inline std::string decode(const std::string& base_string,
 }  // namespace base62
 
 namespace base62 {
+
 /**
+ * @brief 将二进制数据编码为字符串。
+ * @note 若输入的二进制数据由数字类型转换而来，应注意输入的数字需为大端序。
  *
+ * @tparam Alphabets 编码字符集类型，默认为 alphabet::base62。
+ * @param binary_data 待编码的二进制字符串。
+ * @return 编码后的字符串。
  */
 template <typename Alphabets = alphabet::base62>
 std::string encode(const std::string& binary_data) {
   return details::encode(binary_data, Alphabets::data());
 }
+
 /**
+ * @brief 将 Base62 编码字符串解码为原始二进制数据。
  *
+ * @tparam Alphabets 编码字符集类型，默认为 alphabet::base62。
+ * @param base_string 待解码的字符串。
+ * @return 解码后的二进制数据；若包含非法字符则返回空字符串。
  */
 template <typename Alphabets = alphabet::base62>
 std::string decode(const std::string& base_string) {
   return details::decode(base_string, Alphabets::rdata());
 }
+
 }  // namespace base62
 
 }  // namespace base
