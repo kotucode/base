@@ -10,6 +10,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 # C++ Compile Options (Global)
 if(MSVC)
+  add_compile_options(/utf-8)
 else()
   add_compile_options(-Wall)
   add_compile_options(-Werror)

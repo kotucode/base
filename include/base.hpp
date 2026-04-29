@@ -278,7 +278,8 @@ inline std::string decode(const std::string& base_string,
 
 /**
  * @brief 将二进制数据编码为 Base62 字符串。
- * @note 若输入的二进制数据由数字类型指针转换而来，应注意输入的数字需为大端序。
+ * @attention 若输入的二进制数据由数字类型指针转换而来，
+ * 应注意输入的数字需为大端序。
  *
  * @tparam Alphabets 编码字符集类型，默认为 alphabet::base62。
  * @param binary_data 待编码的二进制字符串。
@@ -413,6 +414,21 @@ inline std::string decode(const std::string& base_string,
   return result;
 }
 
+inline std::string pad(const std::string& base_string,
+                       const std::string& fill) {
+  std::string padding;
+  for (std::size_t i = 0; i < base_string.size() % 4; ++i) {
+    padding += fill;
+  }
+  return base_string + padding;
+}
+
+inline std::string trim(const std::string& base_string,
+                        const std::string& fill) {
+  auto pos = base_string.find(fill);
+  return base_string.substr(0, pos);
+}
+
 }  // namespace details
 
 /**
@@ -437,6 +453,37 @@ std::string encode(const std::string& binary_data) {
 template <typename Alphabets = alphabet::base64>
 std::string decode(const std::string& base_string) {
   return details::decode(base_string, Alphabets::rdata(), Alphabets::fill());
+}
+
+/**
+ * @brief 给修剪过的 Base64 编码字符串重新添加上填充。
+ * @attention 当填充符长度大于 1 时，
+ * 请确保传入的 base_string 一定是修剪过后的。
+ * 否则可能会获得错误的结果。
+ * 例如使用 base64url 时传入 "YSB2YT8%3d" 输出 "YSB2YT8%3d%3d%3d".
+ *
+ * @tparam Alphabets 编码字符集类型，默认为 alphabet::base64。
+ * @param base_string 修剪过的 Base64 编码字符串。
+ * @return 重新添加上填充的 Base64 编码字符串。
+ */
+template <typename Alphabets = alphabet::base64>
+std::string pad(const std::string& base_string) {
+  return details::pad(base_string, Alphabets::fill());
+}
+
+/**
+ * @brief 修剪 Base64 编码字符串，去掉末尾的填充。
+ *
+ * @tparam Alphabets 编码字符集类型，默认为 alphabet::base64。
+ * @param base_string 完整的 Base64 编码字符串。
+ * @returns 修剪过的 Base64 编码字符串。
+ *
+ * @note 在一些 url-safe 或者 filename-safe 的 Base64 标准中，
+ * 会要求去掉末尾的填充字符。
+ */
+template <typename Alphabets = alphabet::base64>
+std::string trim(const std::string& base_string) {
+  return details::trim(base_string, Alphabets::fill());
 }
 
 }  // namespace base64

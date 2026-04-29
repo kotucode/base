@@ -13,5 +13,6 @@ function(add_ctest_executable target_name)
   add_test(NAME ${target_name} COMMAND ${target_name})
 endfunction()
 
+add_ctest_executable(test test.cpp)
 add_ctest_executable(test_base62 test_base62.cpp)
 add_ctest_executable(test_base64 test_base64.cpp)
