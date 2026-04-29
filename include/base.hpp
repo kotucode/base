@@ -56,40 +56,38 @@ struct base62 {
 namespace base62 {
 namespace details {
 
-/**
- *
- */
 inline std::string encode(const std::string& binary_data,
                           const std::array<char, 62>& alphabet) {
   if (binary_data.empty()) return "";
 
-  // 1. 统计输入中的前导零字节（0x00）个数
+  // 统计输入中的前导零字节（0x00）个数
   std::size_t zeros = 0;
   while (zeros < binary_data.size() && binary_data[zeros] == 0) {
-    ++zeros;
+    zeros += 1;
   }
 
-  // 2. 将剩余字节复制到大整数向量（big-endian 表示，索引 0 为最高字节）
-  std::vector<uint8_t> bignum;
-  bignum.reserve(binary_data.size() - zeros);
-  for (std::size_t i = zeros; i < binary_data.size(); ++i) {
-    bignum.push_back(static_cast<uint8_t>(binary_data[i]));
-  }
-
-  // 3. 全零输入直接返回对应数量的 alphabet[0] 字符
-  if (bignum.empty()) {
+  // 全零输入直接返回对应数量的 alphabet[0] 字符
+  if (zeros == binary_data.size()) {
     return std::string(zeros, alphabet[0]);
   }
 
-  std::string tmp;  // 临时存放逆序的编码字符（低位在前）
+  // 将剩余字节复制到大整数向量（big-endian 表示，索引 0 为最高字节）
+  std::vector<uint8_t> bignum;
+  bignum.reserve(binary_data.size() - zeros);
+  for (auto i = zeros; i < binary_data.size(); ++i) {
+    bignum.push_back(static_cast<uint8_t>(binary_data[i]));
+  }
+
+  // 临时存放逆序的编码字符（低位在前）
+  std::string tmp;
   tmp.reserve(binary_data.size() * 2);
 
-  // 4. 反复执行“大整数 / base”操作，直到商为 0
+  // 反复执行“大整数 / 62”操作，直到商为 0
   while (!bignum.empty()) {
     int carry = 0;
     // 从高位到低位处理每个字节
     for (std::size_t i = 0; i < bignum.size(); ++i) {
-      int value = carry * 256 + bignum[i];
+      int value = (carry << 8) + bignum[i];
       bignum[i] = static_cast<uint8_t>(value / 62);
       carry = value % 62;
     }
@@ -107,24 +105,20 @@ inline std::string encode(const std::string& binary_data,
     tmp.push_back(alphabet[carry]);
   }
 
-  // 5. 组合最终结果：前导“0”字符 + 反转后的 tmp
+  // 组合最终结果：前导“0”字符 + 反转后的 tmp
   std::string result;
   result.reserve(zeros + tmp.size());
   result.append(zeros, alphabet[0]);
-  std::reverse(tmp.begin(), tmp.end());
-  result.append(tmp);
+  result.append(tmp.rbegin(), tmp.rend());
 
   return result;
 }
 
-/**
- *
- */
 inline std::string decode(const std::string& base_string,
                           const std::array<int8_t, 256>& rdata) {
   if (base_string.empty()) return "";
 
-  // 1. 找到 alphabet[0] 对应的字符（用于前导零处理）
+  // 找到 alphabet[0] 对应的字符（用于前导零处理）
   char zero_char = 0;
   bool found_zero = false;
   for (int i = 0; i < 256; ++i) {
@@ -135,76 +129,66 @@ inline std::string decode(const std::string& base_string,
     }
   }
   if (!found_zero) {
-    // 安全回退（Base62 中 '0' 即为 0 值字符）
-    zero_char = '0';
+    zero_char = '0';  // 安全回退（Base62 中 '0' 即为 0 值字符）
   }
 
-  // 2. 统计输入字符串前导“零字符”的个数
+  // 统计输入字符串前导“零字符”的个数
   std::size_t zeros = 0;
   while (zeros < base_string.size() && base_string[zeros] == zero_char) {
     ++zeros;
   }
 
-  // 3. 初始化大整数（big-endian，空向量表示数值 0）
-  std::vector<uint8_t> bignum;
+  // 初始化大整数（little-endian）
+  std::vector<uint8_t> bignum(1, 0);
 
-  // 4. 遍历剩余字符，进行 bignum = bignum * base + digit
+  // 遍历剩余字符，进行 bignum = bignum * base + digit
   for (std::size_t i = zeros; i < base_string.size(); ++i) {
-    unsigned char c = static_cast<unsigned char>(base_string[i]);
-    int digit = static_cast<int>(rdata[c]);
+    auto c = static_cast<uint8_t>(base_string[i]);
+    auto digit = static_cast<int>(rdata[c]);
     if (digit < 0) {
-      // 包含非法字符，直接返回空表示失败
-      return "";
+      return "";  // 包含非法字符，直接返回空表示失败
     }
 
     // --- 乘法：bignum *= base ---
-    if (bignum.empty()) {
-      // 当前值为 0，乘 base 仍为 0，直接赋值为 digit
-      if (digit > 0) {
-        bignum.push_back(static_cast<uint8_t>(digit));
-      }
-    } else {
-      int carry = 0;
-      // 从低位（末尾）向高位（开头）处理
-      for (int j = static_cast<int>(bignum.size()) - 1; j >= 0; --j) {
-        int product = bignum[j] * 62 + carry;
-        bignum[j] = static_cast<uint8_t>(product % 256);
-        carry = product / 256;
-      }
-      // 处理乘法产生的额外进位
-      while (carry > 0) {
-        bignum.insert(bignum.begin(), static_cast<uint8_t>(carry % 256));
-        carry /= 256;
-      }
+    int carry = 0;
+    // 从低位（末尾）向高位（开头）处理
+    for (auto&& term : bignum) {
+      int product = static_cast<int>(term) * 62 + carry;
+      term = static_cast<uint8_t>(product % 256);
+      carry = product / 256;
+    }
+    // 处理乘法产生的额外进位
+    while (carry > 0) {
+      bignum.push_back(static_cast<uint8_t>(carry % 256));
+      carry >>= 8;
+    }
 
-      // --- 加法：bignum += digit ---
-      if (digit > 0) {
-        int add_carry = digit;
-        for (int j = static_cast<int>(bignum.size()) - 1;
-             j >= 0 && add_carry > 0; --j) {
-          int sum = bignum[j] + add_carry;
-          bignum[j] = static_cast<uint8_t>(sum % 256);
-          add_carry = sum / 256;
-        }
-        while (add_carry > 0) {
-          bignum.insert(bignum.begin(), static_cast<uint8_t>(add_carry % 256));
-          add_carry /= 256;
-        }
+    // --- 加法：bignum += digit ---
+    if (digit > 0) {
+      int add_carry = digit;
+      for (auto&& term : bignum) {
+        int sum = static_cast<int>(term) + add_carry;
+        term = static_cast<uint8_t>(sum % 256);
+        add_carry = sum >> 8;
+      }
+      while (add_carry > 0) {
+        bignum.push_back(static_cast<uint8_t>(add_carry % 256));
+        add_carry >>= 8;
       }
     }
   }
 
-  // 5. 移除大整数前导零（保留空向量表示 0）
-  while (!bignum.empty() && bignum.front() == 0) {
-    bignum.erase(bignum.begin());
+  // 移除大整数前导零
+  while (!bignum.empty() && bignum.back() == 0) {
+    bignum.pop_back();
   }
 
-  // 6. 构造最终二进制结果：zeros 个 0x00 + bignum 字节序列
+  // 构造最终二进制结果：zeros 个 0x00 + bignum 字节序列
   std::string result;
   result.reserve(zeros + bignum.size());
   result.append(zeros, '\0');
-  for (uint8_t byte : bignum) {
-    result.push_back(static_cast<char>(byte));
+  for (auto it = bignum.rbegin(); it != bignum.rend(); ++it) {
+    result.push_back(static_cast<char>(*it));
   }
 
   return result;
@@ -217,7 +201,7 @@ namespace base62 {
 
 /**
  * @brief 将二进制数据编码为字符串。
- * @note 若输入的二进制数据由数字类型转换而来，应注意输入的数字需为大端序。
+ * @note 若输入的二进制数据由数字类型指针转换而来，应注意输入的数字需为大端序。
  *
  * @tparam Alphabets 编码字符集类型，默认为 alphabet::base62。
  * @param binary_data 待编码的二进制字符串。
