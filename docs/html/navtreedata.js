@@ -24,7 +24,7 @@
 */
 var NAVTREE =
 [
-  [ "Kotucode Base Project", "index.html", [
+  [ "Kotucode's Base 项目", "index.html", [
     [ "命名空间", "namespaces.html", [
       [ "命名空间列表", "namespaces.html", "namespaces_dup" ],
       [ "命名空间成员", "namespacemembers.html", [
