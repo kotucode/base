@@ -8,16 +8,34 @@
 - **Base64 编解码** — 标准 Base64 编解码支持
 - **Base64URL 编解码** — URL 安全的 Base64 编解码
 
+## 安装
+
+本项目是纯头文件库（Header-Only），复制 include 目录下的 base.hpp 文件到你的项目中即可使用。
+
 ## 快速开始
 
 ```cpp
 #include "base.hpp"
 
-// Base62 编码
-auto encoded = kotucode::base::base62::encode(data);
+int main() {
+  auto data = "Hello World!";
 
-// Base62 解码
-auto decoded = kotucode::base::base62::decode(encoded);
+  // Base62 编解码
+  auto encoded = kotucode::base::base62::encode(data);
+  auto decoded = kotucode::base::base62::decode(encoded);
+
+  // Base64 编解码
+  auto encoded2 = kotucode::base::base64::encode(data);
+  auto decoded2 = kotucode::base::base64::decode(encoded2);
+
+  // Base64 编解码 (url-safe)
+  using base64url = kotucode::base::alphabet::base64url;
+  auto encoded3 = kotucode::base::base64::encode<base64url>(data);
+  auto decoded3 = kotucode::base::base64::decode<base64url>(encoded3);
+
+  return 0;
+}
+
 ```
 
 ## API 文档
