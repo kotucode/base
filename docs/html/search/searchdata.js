@@ -1,11 +1,11 @@
 var indexSectionsWithContent =
 {
-  0: "abdefkprst功快文许项",
+  0: "abdefkprst功安快文许项",
   1: "b",
   2: "k",
   3: "br",
   4: "defprt",
-  5: "abks功快文许项"
+  5: "abks功安快文许项"
 };
 
 var indexSectionNames =

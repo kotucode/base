@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['文档_0',['API 文档',['../index.html#autotoc_md3',1,'']]]
+  ['快速开始_0',['快速开始',['../index.html#autotoc_md3',1,'']]]
 ];

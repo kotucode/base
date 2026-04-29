@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['项目_0',['Kotucode&apos;s Base 项目',['../index.html',1,'']]]
+  ['许可证_0',['许可证',['../index.html#autotoc_md5',1,'']]]
 ];

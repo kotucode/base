@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['快速开始_0',['快速开始',['../index.html#autotoc_md2',1,'']]]
+  ['安装_0',['安装',['../index.html#autotoc_md2',1,'']]]
 ];

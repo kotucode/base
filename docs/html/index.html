@@ -109,21 +109,40 @@ $(function(){initNavTree('index.html','',''); });
 <li><b>Base64URL 编解码</b> — URL 安全的 Base64 编解码</li>
 </ul>
 <h1 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
+安装</h1>
+<p>本项目是纯头文件库（Header-Only），复制 include 目录下的 <a class="el" href="base_8hpp.html">base.hpp</a> 文件到你的项目中即可使用。</p>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
 快速开始</h1>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="base_8hpp.html">base.hpp</a>&quot;</span></div>
 <div class="line"> </div>
-<div class="line"><span class="comment">// Base62 编码</span></div>
-<div class="line"><span class="keyword">auto</span> encoded = <a class="code hl_function" href="namespacekotucode_1_1base_1_1base62.html#ad5a870a41916cfa56e6d361ebcf058d4">kotucode::base::base62::encode</a>(data);</div>
+<div class="line"><span class="keywordtype">int</span> main() {</div>
+<div class="line">  <span class="keyword">auto</span> data = <span class="stringliteral">&quot;Hello World!&quot;</span>;</div>
 <div class="line"> </div>
-<div class="line"><span class="comment">// Base62 解码</span></div>
-<div class="line"><span class="keyword">auto</span> decoded = <a class="code hl_function" href="namespacekotucode_1_1base_1_1base62.html#a6752a6b3b6a999a423b555eab4e44e13">kotucode::base::base62::decode</a>(encoded);</div>
+<div class="line">  <span class="comment">// Base62 编解码</span></div>
+<div class="line">  <span class="keyword">auto</span> encoded = <a class="code hl_function" href="namespacekotucode_1_1base_1_1base62.html#ad5a870a41916cfa56e6d361ebcf058d4">kotucode::base::base62::encode</a>(data);</div>
+<div class="line">  <span class="keyword">auto</span> decoded = <a class="code hl_function" href="namespacekotucode_1_1base_1_1base62.html#a6752a6b3b6a999a423b555eab4e44e13">kotucode::base::base62::decode</a>(encoded);</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">// Base64 编解码</span></div>
+<div class="line">  <span class="keyword">auto</span> encoded2 = <a class="code hl_function" href="namespacekotucode_1_1base_1_1base64.html#a44f195ee236fc85706328b818cc82291">kotucode::base::base64::encode</a>(data);</div>
+<div class="line">  <span class="keyword">auto</span> decoded2 = <a class="code hl_function" href="namespacekotucode_1_1base_1_1base64.html#ac7f81435cb371eef70ac7ffd30789bf2">kotucode::base::base64::decode</a>(encoded2);</div>
+<div class="line"> </div>
+<div class="line">  <span class="comment">// Base64 编解码 (url-safe)</span></div>
+<div class="line">  <span class="keyword">using </span>base64url = <a class="code hl_struct" href="structkotucode_1_1base_1_1alphabet_1_1base64url.html">kotucode::base::alphabet::base64url</a>;</div>
+<div class="line">  <span class="keyword">auto</span> encoded3 = <a class="code hl_function" href="namespacekotucode_1_1base_1_1base64.html#a44f195ee236fc85706328b818cc82291">kotucode::base::base64::encode&lt;base64url&gt;</a>(data);</div>
+<div class="line">  <span class="keyword">auto</span> decoded3 = <a class="code hl_function" href="namespacekotucode_1_1base_1_1base64.html#ac7f81435cb371eef70ac7ffd30789bf2">kotucode::base::base64::decode&lt;base64url&gt;</a>(encoded3);</div>
+<div class="line"> </div>
+<div class="line">  <span class="keywordflow">return</span> 0;</div>
+<div class="line">}</div>
 <div class="ttc" id="abase_8hpp_html"><div class="ttname"><a href="base_8hpp.html">base.hpp</a></div></div>
 <div class="ttc" id="anamespacekotucode_1_1base_1_1base62_html_a6752a6b3b6a999a423b555eab4e44e13"><div class="ttname"><a href="namespacekotucode_1_1base_1_1base62.html#a6752a6b3b6a999a423b555eab4e44e13">kotucode::base::base62::decode</a></div><div class="ttdeci">std::string decode(const std::string &amp;base_string)</div><div class="ttdoc">将 Base62 编码字符串解码为原始二进制数据。</div><div class="ttdef"><b>定义</b> base.hpp:301</div></div>
 <div class="ttc" id="anamespacekotucode_1_1base_1_1base62_html_ad5a870a41916cfa56e6d361ebcf058d4"><div class="ttname"><a href="namespacekotucode_1_1base_1_1base62.html#ad5a870a41916cfa56e6d361ebcf058d4">kotucode::base::base62::encode</a></div><div class="ttdeci">std::string encode(const std::string &amp;binary_data)</div><div class="ttdoc">将二进制数据编码为 Base62 字符串。</div><div class="ttdef"><b>定义</b> base.hpp:289</div></div>
-</div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
+<div class="ttc" id="anamespacekotucode_1_1base_1_1base64_html_a44f195ee236fc85706328b818cc82291"><div class="ttname"><a href="namespacekotucode_1_1base_1_1base64.html#a44f195ee236fc85706328b818cc82291">kotucode::base::base64::encode</a></div><div class="ttdeci">std::string encode(const std::string &amp;binary_data)</div><div class="ttdoc">将二进制数据编码为 Base64 字符串。</div><div class="ttdef"><b>定义</b> base.hpp:442</div></div>
+<div class="ttc" id="anamespacekotucode_1_1base_1_1base64_html_ac7f81435cb371eef70ac7ffd30789bf2"><div class="ttname"><a href="namespacekotucode_1_1base_1_1base64.html#ac7f81435cb371eef70ac7ffd30789bf2">kotucode::base::base64::decode</a></div><div class="ttdeci">std::string decode(const std::string &amp;base_string)</div><div class="ttdoc">将 Base64 编码字符串解码为原始二进制数据。</div><div class="ttdef"><b>定义</b> base.hpp:454</div></div>
+<div class="ttc" id="astructkotucode_1_1base_1_1alphabet_1_1base64url_html"><div class="ttname"><a href="structkotucode_1_1base_1_1alphabet_1_1base64url.html">kotucode::base::alphabet::base64url</a></div><div class="ttdoc">Base64 编码字符集, url-safe 并且 filename-safe， 提供合法的 Base64 字符的正向与反向映射表及其填充字符串。</div><div class="ttdef"><b>定义</b> base.hpp:98</div></div>
+</div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
 API 文档</h1>
 <p>项目文档由 Doxygen 生成，使用浏览器打开项目下的 <span class="tt">docs/html/index.html</span> 即可阅读文档。</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md4"></a>
+<h1 class="doxsection"><a class="anchor" id="autotoc_md5"></a>
 许可证</h1>
 <p>本项目基于 MIT 许可证开源，详见 <a href="https://github.com/kotucode/base">LICENSE</a> 文件。 </p>
 </div></div><!-- PageDoc -->
