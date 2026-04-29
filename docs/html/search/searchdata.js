@@ -1,10 +1,11 @@
 var indexSectionsWithContent =
 {
-  0: "bdefkprt",
+  0: "abdefkprst功快文许项",
   1: "b",
   2: "k",
-  3: "b",
-  4: "defprt"
+  3: "br",
+  4: "defprt",
+  5: "abks功快文许项"
 };
 
 var indexSectionNames =
@@ -13,7 +14,8 @@ var indexSectionNames =
   1: "classes",
   2: "namespaces",
   3: "files",
-  4: "functions"
+  4: "functions",
+  5: "pages"
 };
 
 var indexSectionLabels =
@@ -22,6 +24,7 @@ var indexSectionLabels =
   1: "类",
   2: "命名空间",
   3: "文件",
-  4: "函数"
+  4: "函数",
+  5: "页"
 };
 

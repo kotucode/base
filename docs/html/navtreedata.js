@@ -25,6 +25,10 @@
 var NAVTREE =
 [
   [ "Kotucode's Base 项目", "index.html", [
+    [ "功能概述", "index.html#autotoc_md1", null ],
+    [ "快速开始", "index.html#autotoc_md2", null ],
+    [ "API 文档", "index.html#autotoc_md3", null ],
+    [ "许可证", "index.html#autotoc_md4", null ],
     [ "命名空间", "namespaces.html", [
       [ "命名空间列表", "namespaces.html", "namespaces_dup" ],
       [ "命名空间成员", "namespacemembers.html", [
