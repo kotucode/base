@@ -12,6 +12,19 @@
 
 本项目是纯头文件库（Header-Only），复制 include 目录下的 base.hpp 文件到你的项目中即可使用。
 
+你也可以使用 CMake 的 FetchContent 进行导入。
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(base
+    GIT_REPOSITORY https://github.com/kotucode/base.git
+    GIT_TAG main
+)
+FetchContent_MakeAvailable(base)
+
+target_link_libraries(my_app PRIVATE base)
+```
+
 ## 快速开始
 
 ```cpp
