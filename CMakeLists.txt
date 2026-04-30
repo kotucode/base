@@ -5,8 +5,14 @@ include(cmake/build_option.cmake)
 include(cmake/compile_setting.cmake)
 
 add_subdirectory(src)
-add_subdirectory(example)
-add_subdirectory(test)
+
+if(MY_BUILD_EXAMPLE)
+  add_subdirectory(example)
+endif()
+
+if(MY_BUILD_TEST)
+  add_subdirectory(test)
+endif()
 
 include(cmake/install.cmake)
 include(cmake/cpack.cmake)
