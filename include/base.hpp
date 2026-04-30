@@ -160,32 +160,28 @@ inline std::string encode(const std::string& binary_data,
 
   // 临时存放逆序的编码字符（低位在前）
   std::string tmp;
-  tmp.reserve(binary_data.size() * 2);
+  tmp.reserve(binary_data.size() * 3 / 2 + 1);
 
-  // 反复执行“大整数 / 62”操作，直到商为 0
-  while (!bignum.empty()) {
+  // 反复执行"大整数 / 62"操作，直到商为 0
+  // 使用 start 索引代替 vector::erase，避免 O(n) 的头部删除
+  std::size_t start = 0;
+  while (start < bignum.size()) {
     int carry = 0;
     // 从高位到低位处理每个字节
-    for (std::size_t i = 0; i < bignum.size(); ++i) {
+    for (std::size_t i = start; i < bignum.size(); ++i) {
       int value = (carry << 8) + bignum[i];
       bignum[i] = static_cast<uint8_t>(value / 62);
       carry = value % 62;
     }
-    // 移除商的前导零，保持规范化
-    std::size_t first_nonzero = 0;
-    while (first_nonzero < bignum.size() && bignum[first_nonzero] == 0) {
-      ++first_nonzero;
-    }
-    if (first_nonzero == bignum.size()) {
-      bignum.clear();
-    } else if (first_nonzero > 0) {
-      bignum.erase(bignum.begin(), bignum.begin() + first_nonzero);
+    // 跳过商的前导零，保持规范化
+    while (start < bignum.size() && bignum[start] == 0) {
+      ++start;
     }
     // carry 即为本次除法的余数，对应一个 base 字符
     tmp.push_back(alphabet[carry]);
   }
 
-  // 组合最终结果：前导“0”字符 + 反转后的 tmp
+  // 组合最终结果：前导"0"字符 + 反转后的 tmp
   std::string result;
   result.reserve(zeros + tmp.size());
   result.append(zeros, alphabet[0]);
@@ -198,21 +194,11 @@ inline std::string decode(const std::string& base_string,
                           const std::array<int8_t, 256>& rdata) {
   if (base_string.empty()) return "";
 
-  // 找到 alphabet[0] 对应的字符（用于前导零处理）
-  char zero_char = 0;
-  bool found_zero = false;
-  for (int i = 0; i < 256; ++i) {
-    if (rdata[i] == 0) {
-      zero_char = static_cast<char>(i);
-      found_zero = true;
-      break;
-    }
-  }
-  if (!found_zero) {
-    zero_char = '0';  // 安全回退（Base62 中 '0' 即为 0 值字符）
-  }
+  // Base62 中 alphabet[0] 对应字符 '0'
+  // 暂不考虑用户自定义 zero_char 的情况
+  char zero_char = '0';
 
-  // 统计输入字符串前导“零字符”的个数
+  // 统计输入字符串前导"零字符"的个数
   std::size_t zeros = 0;
   while (zeros < base_string.size() && base_string[zeros] == zero_char) {
     ++zeros;
@@ -221,40 +207,24 @@ inline std::string decode(const std::string& base_string,
   // 初始化大整数（little-endian）
   std::vector<uint8_t> bignum(1, 0);
 
-  // 遍历剩余字符，进行 bignum = bignum * base + digit
+  // 遍历剩余字符，进行 bignum = bignum * 62 + digit
   for (std::size_t i = zeros; i < base_string.size(); ++i) {
     auto c = static_cast<uint8_t>(base_string[i]);
     auto digit = static_cast<int>(rdata[c]);
     if (digit < 0) {
       return "";  // 包含非法字符，直接返回空表示失败
     }
-
-    // --- 乘法：bignum *= base ---
-    int carry = 0;
-    // 从低位（末尾）向高位（开头）处理
+    // 从低位向高位处理
+    int carry = digit;
     for (auto&& term : bignum) {
       int product = static_cast<int>(term) * 62 + carry;
       term = static_cast<uint8_t>(product % 256);
       carry = product / 256;
     }
-    // 处理乘法产生的额外进位
+    // 处理计算产生的额外进位
     while (carry > 0) {
       bignum.push_back(static_cast<uint8_t>(carry % 256));
       carry >>= 8;
-    }
-
-    // --- 加法：bignum += digit ---
-    if (digit > 0) {
-      int add_carry = digit;
-      for (auto&& term : bignum) {
-        int sum = static_cast<int>(term) + add_carry;
-        term = static_cast<uint8_t>(sum % 256);
-        add_carry = sum >> 8;
-      }
-      while (add_carry > 0) {
-        bignum.push_back(static_cast<uint8_t>(add_carry % 256));
-        add_carry >>= 8;
-      }
     }
   }
 
