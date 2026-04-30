@@ -4,12 +4,14 @@ function(add_test_executable target_name)
   add_executable(${target_name} ${ARGN})
   # You can link your lib in here.
   # target_link_libraries(${target_name} PRIVATE mylib)
+  target_link_libraries(${target_name} PRIVATE base)
 endfunction()
 
 function(add_ctest_executable target_name)
   add_executable(${target_name} ${ARGN})
   # You can link your lib in here.
   # target_link_libraries(${target_name} PRIVATE mylib)
+  target_link_libraries(${target_name} PRIVATE base)
   add_test(NAME ${target_name} COMMAND ${target_name})
 endfunction()
 
