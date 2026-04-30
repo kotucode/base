@@ -292,26 +292,20 @@ inline std::string encode(const std::string& binary_data,
     auto index2 = (((*iter) & 0x03) << 4) + (((*(iter + 1)) & 0xf0) >> 4);
     auto index3 = (((*(iter + 1)) & 0x0f) << 2) + (((*(iter + 2)) & 0xc0) >> 6);
     auto index4 = ((*(iter + 2)) & 0x3f);
-    result.push_back(alphabet.at(index1));
-    result.push_back(alphabet.at(index2));
-    result.push_back(alphabet.at(index3));
-    result.push_back(alphabet.at(index4));
+    result.append({alphabet[index1], alphabet[index2], alphabet[index3],
+                   alphabet[index4]});
   }
 
   if (auto remains = binary_data.end() - iter; remains == 1) {
     auto index1 = ((*iter) & 0xfc) >> 2;
     auto index2 = (((*iter) & 0x03) << 4);
-    result.push_back(alphabet.at(index1));
-    result.push_back(alphabet.at(index2));
-    result.append(fill);
-    result.append(fill);
+    result.append({alphabet[index1], alphabet[index2]});
+    result.append(fill + fill);
   } else if (remains == 2) {
     auto index1 = ((*iter) & 0xfc) >> 2;
     auto index2 = (((*iter) & 0x03) << 4) + (((*(iter + 1)) & 0xf0) >> 4);
     auto index3 = (((*(iter + 1)) & 0x0f) << 2);
-    result.push_back(alphabet.at(index1));
-    result.push_back(alphabet.at(index2));
-    result.push_back(alphabet.at(index3));
+    result.append({alphabet[index1], alphabet[index2], alphabet[index3]});
     result.append(fill);
   }
 
@@ -326,12 +320,20 @@ inline std::string decode(const std::string& base_string,
   std::string result;
   result.reserve(((base_string.size() + 3) / 4) * 3);
 
+  size_t paddings = 0;
+  size_t padlen = 0;
+  auto pad_pos = base_string.find(fill);
+  if (pad_pos != std::string_view::npos) {
+    padlen = base_string.size() - pad_pos;
+    paddings = padlen / fill.size();
+  }
+
   auto iter = base_string.begin();
-  for (; base_string.end() - iter > 4; iter += 4) {
-    auto index1 = rdata.at(*iter);
-    auto index2 = rdata.at(*(iter + 1));
-    auto index3 = rdata.at(*(iter + 2));
-    auto index4 = rdata.at(*(iter + 3));
+  for (; iter + 4 < base_string.end() - padlen; iter += 4) {
+    auto index1 = rdata[static_cast<uint8_t>(*iter)];
+    auto index2 = rdata[static_cast<uint8_t>(*(iter + 1))];
+    auto index3 = rdata[static_cast<uint8_t>(*(iter + 2))];
+    auto index4 = rdata[static_cast<uint8_t>(*(iter + 3))];
 
     if (index1 < 0 || index2 < 0 || index3 < 0 || index4 < 0) {
       return "";
@@ -341,19 +343,12 @@ inline std::string decode(const std::string& base_string,
     auto char2 = ((index2 & 0x0f) << 4) | ((index3 & 0x3c) >> 2);
     auto char3 = ((index3 & 0x03) << 6) | (index4 & 0x3f);
 
-    result.push_back(static_cast<char>(char1));
-    result.push_back(static_cast<char>(char2));
-    result.push_back(static_cast<char>(char3));
+    result.append({static_cast<char>(char1), static_cast<char>(char2),
+                   static_cast<char>(char3)});
   }
 
   if (iter == base_string.end()) {
     return result;
-  }
-
-  size_t paddings = 0;
-  auto pad_pos = base_string.find(fill);
-  if (pad_pos != std::string_view::npos) {
-    paddings = base_string.size() - pad_pos;
   }
 
   size_t remains = 0;
@@ -364,20 +359,20 @@ inline std::string decode(const std::string& base_string,
   }
 
   if (remains > 1) {
-    auto char1 =
-        ((rdata.at(*iter) & 0x3f) << 2) | ((rdata.at(*(iter + 1)) & 0x30) >> 4);
+    auto char1 = ((rdata[static_cast<uint8_t>(*iter)] & 0x3f) << 2) |
+                 ((rdata[static_cast<uint8_t>(*(iter + 1))] & 0x30) >> 4);
     result.push_back(static_cast<char>(char1));
   }
 
   if (remains > 2) {
-    auto char2 = ((rdata.at(*(iter + 1)) & 0x0f) << 4) |
-                 ((rdata.at(*(iter + 2)) & 0x3c) >> 2);
+    auto char2 = ((rdata[static_cast<uint8_t>(*(iter + 1))] & 0x0f) << 4) |
+                 ((rdata[static_cast<uint8_t>(*(iter + 2))] & 0x3c) >> 2);
     result.push_back(static_cast<char>(char2));
   }
 
   if (remains > 3) {
-    auto char3 =
-        ((rdata.at(*(iter + 2)) & 0x03) << 6) | (rdata.at(*(iter + 3)) & 0x3f);
+    auto char3 = ((rdata[static_cast<uint8_t>(*(iter + 2))] & 0x03) << 6) |
+                 (rdata[static_cast<uint8_t>(*(iter + 3))] & 0x3f);
     result.push_back(static_cast<char>(char3));
   }
 

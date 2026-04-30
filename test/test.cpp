@@ -24,8 +24,9 @@ int main() {
     std::cout << "[" << test_case.first;
     std::cout << "] -> [";
     std::cout << encode<base64url>(test_case.first) << "]";
-    std::cout << " -> [" << trim<base64url>(encode<base64url>(test_case.first)) << "]";
-    std::cout << " -> [" << pad<base64url>(encode<base64url>(test_case.first)) << "]";
+    std::cout << " -> [" << decode<base64url>(encode<base64url>(test_case.first)) << "]";
+    // std::cout << " -> [" << trim<base64url>(encode<base64url>(test_case.first)) << "]";
+    // std::cout << " -> [" << pad<base64url>(encode<base64url>(test_case.first)) << "]";
     std::cout << std::endl;
   }
   return EXIT_SUCCESS;
