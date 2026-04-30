@@ -111,7 +111,16 @@ $(function(){initNavTree('index.html','',''); });
 <h1 class="doxsection"><a class="anchor" id="autotoc_md2"></a>
 安装</h1>
 <p>本项目是纯头文件库（Header-Only），复制 include 目录下的 <a class="el" href="base_8hpp.html">base.hpp</a> 文件到你的项目中即可使用。</p>
-<h1 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
+<p>你也可以使用 CMake 的 FetchContent 进行导入。</p>
+<div class="fragment"><div class="line">include(FetchContent)</div>
+<div class="line">FetchContent_Declare(base</div>
+<div class="line">    GIT_REPOSITORY https://github.com/kotucode/base.git</div>
+<div class="line">    GIT_TAG main</div>
+<div class="line">)</div>
+<div class="line">FetchContent_MakeAvailable(base)</div>
+<div class="line"> </div>
+<div class="line">target_link_libraries(my_app PRIVATE base)</div>
+</div><!-- fragment --><h1 class="doxsection"><a class="anchor" id="autotoc_md3"></a>
 快速开始</h1>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;<a class="code" href="base_8hpp.html">base.hpp</a>&quot;</span></div>
 <div class="line"> </div>
