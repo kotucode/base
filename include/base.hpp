@@ -56,7 +56,7 @@ struct base62 {
  * 提供合法的 Base64 字符的正向与反向映射表及其填充字符串。
  */
 struct base64 {
-  static const std::array<char, 64>& data() {
+  static const std::array<char, 64>& data() noexcept {
     static constexpr std::array<char, 64> data{
         {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
          'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
@@ -65,7 +65,7 @@ struct base64 {
          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'}};
     return data;
   }
-  static const std::array<int8_t, 256>& rdata() {
+  static const std::array<int8_t, 256>& rdata() noexcept {
     static constexpr std::array<int8_t, 256> rdata{
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -84,7 +84,7 @@ struct base64 {
          -1, -1, -1, -1}};
     return rdata;
   }
-  static const std::string& fill() {
+  static const std::string& fill() noexcept {
     static const std::string fill{"="};
     return fill;
   }
@@ -96,7 +96,7 @@ struct base64 {
  * 提供合法的 Base64 字符的正向与反向映射表及其填充字符串。
  */
 struct base64url {
-  static const std::array<char, 64>& data() {
+  static const std::array<char, 64>& data() noexcept {
     static constexpr std::array<char, 64> data{
         {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
          'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
@@ -105,7 +105,7 @@ struct base64url {
          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'}};
     return data;
   }
-  static const std::array<int8_t, 256>& rdata() {
+  static const std::array<int8_t, 256>& rdata() noexcept {
     static constexpr std::array<int8_t, 256> rdata{
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -124,7 +124,7 @@ struct base64url {
          -1, -1, -1, -1}};
     return rdata;
   }
-  static const std::string& fill() {
+  static const std::string& fill() noexcept {
     static const std::string fill{"%3d"};
     return fill;
   }
