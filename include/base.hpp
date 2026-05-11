@@ -136,6 +136,9 @@ namespace base62 {
 
 namespace details {
 
+/**
+ * @brief base62::encode 的具体实现
+ */
 inline std::string encode(const std::string& binary_data,
                           const std::array<char, 62>& alphabet) {
   if (binary_data.empty()) return "";
@@ -190,6 +193,9 @@ inline std::string encode(const std::string& binary_data,
   return result;
 }
 
+/**
+ * @brief base62::decode 的具体实现
+ */
 inline std::string decode(const std::string& base_string,
                           const std::array<int8_t, 256>& rdata) {
   if (base_string.empty()) return "";
@@ -278,6 +284,9 @@ namespace base64 {
 
 namespace details {
 
+/**
+ * @brief base64::encode 的具体实现
+ */
 inline std::string encode(const std::string& binary_data,
                           const std::array<char, 64>& alphabet,
                           const std::string& fill) {
@@ -312,6 +321,9 @@ inline std::string encode(const std::string& binary_data,
   return result;
 }
 
+/**
+ * @brief base64::decode 的具体实现
+ */
 inline std::string decode(const std::string& base_string,
                           const std::array<int8_t, 256>& rdata,
                           const std::string& fill) {
@@ -379,6 +391,9 @@ inline std::string decode(const std::string& base_string,
   return result;
 }
 
+/**
+ * @brief base64::pad 的具体实现
+ */
 inline std::string pad(const std::string& base_string,
                        const std::string& fill) {
   std::string padding;
@@ -388,6 +403,9 @@ inline std::string pad(const std::string& base_string,
   return base_string + padding;
 }
 
+/**
+ * @brief base64::trim 的具体实现
+ */
 inline std::string trim(const std::string& base_string,
                         const std::string& fill) {
   auto pos = base_string.find(fill);
